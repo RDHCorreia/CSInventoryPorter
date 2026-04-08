@@ -2,7 +2,7 @@
 
 CSInventoryPorter is a desktop application built with Electron, React, and TypeScript designed to seamlessly manage your Counter-Strike 2 inventory. 
 It securely connects to your Steam account and the CS2 Game Coordinator, giving you powerful tools to oversee your items, prices, storage units, and trades.
-It is inspired by various projects such as Skinledger (https://skinledger.com/), casemove (https://github.com/nombersDev/casemove), and an honorable mention to ByMyKel (https://bymykel.com/) which provides various useful repositories.
+It is inspired by various projects such as [Skinledger](https://skinledger.com/), [casemove](https://github.com/nombersDev/casemove), and an honorable mention to [ByMyKel](https://bymykel.com/) which provides various useful repositories.
 Another mention this project was relied heavily on AI assistance, which was used to generate code snippets, optimize algorithms, and provide guidance on best practices throughout the development process.
 Feel free to fork the project, contribute, or report any issues you encounter. Your feedback is invaluable in making CSInventoryPorter the best tool for CS2 inventory management. 
 Email: rafaeldhcorreia@gmail.com
@@ -51,6 +51,14 @@ To compile and launch CSInventoryPorter locally, follow these steps:
    npm run package
    ```
    *The installer and unpacked artifacts will be generated in the `release/` or `dist/` directory.*
+
+## FAQ
+
+**Q: Is my Steam account safe?**
+A: Yes, CSInventoryPorter only communicates directly with steam secure methods and does not store your credentials anywhere besides your local machine when you allow it to store your refresh token. Always ensure you download the application from a trusted source.
+
+**Q: Can I be VAC banned?
+A: No, CSInventoryPorter interacts with [Steam-User](https://github.com/DoctorMcKay/node-steam-user) and [Global-Offensive](https://github.com/DoctorMcKay/node-globaloffensive) in a way that is compliant with their terms of service. However, always use the application responsibly and avoid any actions that could be considered abusive.
 
 ## License
 
