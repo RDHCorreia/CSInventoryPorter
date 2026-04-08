@@ -114,16 +114,12 @@ export interface CharmInfo {
 export interface InventoryItem {
   id: string;
   defindex: number;
-  /** Raw GC origin value used for default-item marketability guards */
   origin?: number;
   position: number;
   custom_name?: string;
   paint_index?: number;
-  /** Music kit id from attribute 166 (used by defindex 1314 re-resolution) */
   music_id?: number;
-  /** Graffiti tint id from attribute 233 (used by defindex 1348/1349 re-resolution) */
   graffiti_tint_id?: number;
-  /** Sticker kit id for sticker/patch inventory items (defindex 1209/4609) */
   sticker_item_id?: number;
   paint_seed?: number;
   paint_wear?: number;
@@ -133,35 +129,21 @@ export interface InventoryItem {
   tradable_after?: Date;
   stickers?: StickerInfo[];
   charms?: CharmInfo[];
-  casket_id?: string;               // If this item is inside a storage unit
-  casket_contained_item_count?: number; // Only for storage units
-  /** Image path for Steam CDN (append to STEAM_CDN_IMAGE_BASE) */
+  casket_id?: string;
+  casket_contained_item_count?: number;
   image_path?: string;
-  /** Full resolved image URL */
   image_url?: string;
-  /** Human-readable market name */
   market_name?: string;
-  /** Item rarity color hex (e.g. "#4b69ff" for Mil-Spec) */
   rarity_color?: string;
-  /** Numeric rarity level (1=Consumer, 2=Industrial, 3=Mil-Spec, 4=Restricted, 5=Classified, 6=Covert) */
   rarity?: number;
-  /** Collection id used for trade-up outcome pool (if known) */
   collection_id?: string;
-  /** Collection display name used for trade-up outcome pool (if known) */
   collection_name?: string;
-  /** Item-specific min float boundary used for trade-up float normalization */
   min_float?: number;
-  /** Item-specific max float boundary used for trade-up float normalization */
   max_float?: number;
-  /** Item quality/type name (e.g. "Classified", "StatTrak") */
   quality_name?: string;
-  /** Numeric quality (0=Normal, 9=StatTrak, 12=Souvenir) */
   quality?: number;
-  /** Weapon type (e.g. "Rifle", "Pistol", "Knife") */
   weapon_type?: string;
-  /** Is this a storage unit? */
   is_storage_unit?: boolean;
-  /** Is this item marketable on the Steam Community Market? */
   marketable?: boolean;
 }
 
@@ -204,7 +186,6 @@ export interface BulkOperationProgress {
   error?: string;
 }
 
-// ---- Pricing (Phase 4) ----
 
 export interface PriceSnapshot {
   time: number;   // Unix timestamp in ms
@@ -254,8 +235,6 @@ export interface PortfolioData {
   error?: string;
 }
 
-// ---- Multi-account (Phase 5) ----
-
 export interface AccountSnapshot {
   steamID: string;
   accountName: string;
@@ -285,8 +264,6 @@ export interface MultiAccountSummary {
   combinedHistory: PortfolioSnapshot[];
   activeAccountId: string | null;
 }
-
-// ---- Market Listings (Phase 6 — Market Management) ----
 
 export interface MarketListing {
   listingId: string;
@@ -326,10 +303,6 @@ export interface MarketProgress {
   total?: number;
 }
 
-// ---- In-Game Store (Phase 6 — Store Purchases) ----
-
-
-// ---- Trading (Phase 7 — Friend Trading) ----
 
 export interface SteamFriend {
   steamID: string;
@@ -384,11 +357,10 @@ export interface TradeOffer {
 
 export interface SendTradeOfferRequest {
   partnerSteamID: string;
-  /** Optional trade token (for non-friends) */
   tradeToken?: string;
   message?: string;
-  myAssetIds: string[];     // assetid strings from our inventory
-  theirAssetIds: string[];  // assetid strings from their inventory
+  myAssetIds: string[];
+  theirAssetIds: string[];
 }
 
 export type TradeActionState = 'idle' | 'loading' | 'sending' | 'error';
@@ -398,32 +370,28 @@ export interface TradeProgress {
   message?: string;
 }
 
-// ---- Investments (Portfolio Tracker) ----
-
 export interface InvestmentEntry {
-  id: string;                // Unique entry ID (uuid)
-  marketHashName: string;    // Steam market hash name
-  displayName: string;       // Human-readable item name
-  imageUrl?: string;         // Item image URL
-  rarityColor?: string;      // Rarity color hex
-  quantity: number;          // Number of items purchased
-  purchasePrice: number;     // Price per item at purchase (in the currency specified below)
-  purchaseDate: string;      // ISO date string (YYYY-MM-DD)
-  currency?: 'USD' | 'EUR';  // New writes are EUR; missing/legacy entries are interpreted as USD
-  notes?: string;            // Optional user notes
-  createdAt: number;         // Unix timestamp ms when entry was created
+  id: string;
+  marketHashName: string;
+  displayName: string;
+  imageUrl?: string;
+  rarityColor?: string;
+  quantity: number;
+  purchasePrice: number;
+  purchaseDate: string;
+  currency?: 'USD' | 'EUR';
+  notes?: string;
+  createdAt: number;
 }
 
 export interface InvestmentSummary {
   entry: InvestmentEntry;
-  currentPrice: number;      // Current market price per item (in EUR)
-  totalCost: number;         // quantity * purchasePrice (converted to EUR when needed)
-  currentValue: number;      // quantity * currentPrice
-  profit: number;            // currentValue - totalCost
-  profitPercent: number;     // (profit / totalCost) * 100
-  /** Original purchase price before any conversion (always in entry.currency) */
+  currentPrice: number;
+  totalCost: number;
+  currentValue: number;
+  profit: number;
+  profitPercent: number;
   originalTotalCost: number;
-  /** Whether the totalCost was converted from a different currency */
   wasConverted: boolean;
 }
 
@@ -435,19 +403,14 @@ export interface InvestmentPortfolio {
   totalProfitPercent: number;
 }
 
-// ---- Exchange Rates ----
-
 export interface ExchangeRates {
-  base: string;             // e.g. 'USD' for legacy USD->EUR conversion support
-  rates: Record<string, number>;  // e.g. { EUR: 0.85, ... }
-  lastFetched: number;      // Unix timestamp ms
+  base: string;
+  rates: Record<string, number>;
+  lastFetched: number;
 }
-
-// ---- Trade-Up Contract (Phase 8) ----
 
 export interface TradeupResult {
   success: boolean;
-  /** IDs of items received from the trade-up */
   receivedItemIds?: string[];
   error?: string;
 }
@@ -479,27 +442,17 @@ export interface TradeupPrediction {
   unknownFloatInputs: number;
 }
 
-// ---- Armory Redemption (Phase 9) ----
-
 export interface ArmoryItem {
-  /** Unique item ID from the personal store SO cache */
   itemId: string;
-  /** Name of the item (resolved from item data if possible) */
   name: string;
-  /** Cost in stars */
   cost: number;
-  /** Optional image URL for the item */
   imageUrl?: string;
-  /** Category tag for grouping (e.g. 'limited', 'charms', 'collection', 'case', 'sticker') */
   category?: string;
 }
 
 export interface ArmoryData {
-  /** Current redeemable star balance */
   stars: number;
-  /** Timestamp of when the personal store was generated */
   generationTime: number;
-  /** Items available in the personal store */
   items: ArmoryItem[];
 }
 
@@ -513,8 +466,6 @@ export interface ArmoryProgress {
   message?: string;
   currentStars?: number;
 }
-
-// ---- Full-load phases (Phase 6) ----
 
 export type FullLoadPhase = 'inventory' | 'caskets' | 'ready' | 'prices' | 'done';
 
@@ -545,7 +496,7 @@ export const IPC = {
   ACCOUNTS_REMOVE: 'accounts:remove',
   ACCOUNTS_GET: 'accounts:get',
 
-  // Inventory (Phase 2)
+  // Inventory 
   INVENTORY_LOAD: 'inventory:load',
   INVENTORY_UPDATED: 'inventory:updated',
   INVENTORY_GET: 'inventory:get',
@@ -558,27 +509,27 @@ export const IPC = {
   CASKET_RENAME: 'casket:rename',
   CASKET_OPERATION_PROGRESS: 'casket:operation-progress',
 
-  // Pricing (Phase 4)
+  // Pricing 
   PRICING_FETCH: 'pricing:fetch',
   PRICING_CANCEL: 'pricing:cancel',
   PRICING_PROGRESS: 'pricing:progress',
   PRICING_GET: 'pricing:get',
 
-  // Multi-account (Phase 5)
+  // Multi-account 
   ACCOUNTS_SWITCH: 'accounts:switch',
   ACCOUNTS_MULTI_SUMMARY: 'accounts:multi-summary',
   ACCOUNTS_SAVE_SNAPSHOT: 'accounts:save-snapshot',
 
-  // Settings / Currency (Phase 6)
+  // Settings / Currency 
   SETTINGS_GET_CURRENCY: 'settings:get-currency',
   SETTINGS_SET_CURRENCY: 'settings:set-currency',
   SETTINGS_CURRENCY_CHANGED: 'settings:currency-changed',
 
-  // Full-load (Phase 6)
+  // Full-load 
   FULL_LOAD: 'full-load',
   FULL_LOAD_PROGRESS: 'full-load:progress',
 
-  // Market Listings (Phase 6 — Market Management)
+  // Market Listings 
   MARKET_LIST_ITEM: 'market:list-item',
   MARKET_LIST_MULTIPLE: 'market:list-multiple',
   MARKET_DELIST: 'market:delist',
@@ -587,14 +538,14 @@ export const IPC = {
   MARKET_PROGRESS: 'market:progress',
   MARKET_LISTINGS_UPDATED: 'market:listings-updated',
 
-  // In-Game Store (Phase 6 — Store Purchases)
+  // In-Game Store 
   STORE_GET_ITEMS: 'store:get-items',
   STORE_PURCHASE: 'store:purchase',
   STORE_GET_WALLET: 'store:get-wallet',
   STORE_PROGRESS: 'store:progress',
   STORE_WALLET_UPDATED: 'store:wallet-updated',
 
-  // Trading (Phase 7 — Friend Trading)
+  // Trading 
   TRADE_GET_MY_TRADABLE_IDS: 'trade:get-my-tradable-ids',
   TRADE_GET_FRIENDS: 'trade:get-friends',
   TRADE_GET_FRIEND_INVENTORY: 'trade:get-friend-inventory',
@@ -618,17 +569,17 @@ export const IPC = {
   EXCHANGE_RATES_GET: 'exchange-rates:get',
   EXCHANGE_RATES_CONVERT: 'exchange-rates:convert',
 
-  // Trade-Up Contract (Phase 8)
+  // Trade-Up Contract 
   TRADEUP_EXECUTE: 'tradeup:execute',
   TRADEUP_PREDICT: 'tradeup:predict',
   TRADEUP_PROGRESS: 'tradeup:progress',
 
-  // Armory Redemption (Phase 9)
+  // Armory Redemption 
   ARMORY_GET_DATA: 'armory:get-data',
   ARMORY_REDEEM: 'armory:redeem',
   ARMORY_PROGRESS: 'armory:progress',
 
-  // Price Server (Phase 11)
+  // Price Server 
   PRICE_SERVER_GET: 'priceserver:get',
   PRICE_SERVER_SET: 'priceserver:set',
   PRICE_SERVER_TEST: 'priceserver:test',

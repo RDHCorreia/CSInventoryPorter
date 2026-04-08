@@ -1,5 +1,5 @@
-appId: com.skinporter.app
-productName: SkinPorter
+appId: com.csinventoryporter.app
+productName: CSInventoryPorter
 directories:
   buildResources: resources
   output: release

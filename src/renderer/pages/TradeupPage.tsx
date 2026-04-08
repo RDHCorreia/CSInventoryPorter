@@ -1,7 +1,6 @@
 // ============================================================
 // CSInventoryPorter — Trade-Up Contract Page
 // Trade up 10 same-rarity skins into 1 higher-rarity skin
-// Phase 8
 // ============================================================
 
 import { useState, useMemo, useCallback, useContext } from 'react';
@@ -84,11 +83,10 @@ function InventoryItemCard({
     <button
       onClick={onAdd}
       disabled={disabled}
-      className={`group relative flex flex-col items-center bg-slate-800/60 border rounded-lg p-2 transition-all ${
-        disabled
+      className={`group relative flex flex-col items-center bg-slate-800/60 border rounded-lg p-2 transition-all ${disabled
           ? 'border-slate-700/50 opacity-40 cursor-not-allowed'
           : 'border-slate-700 hover:border-slate-500 hover:bg-slate-700/60 cursor-pointer'
-      }`}
+        }`}
     >
       {/* Rarity accent bar */}
       <div
@@ -335,13 +333,12 @@ export default function TradeupPage({ auth, onNavigate }: Props) {
                     key={rf.rarity}
                     onClick={() => !tradeup.selectedItems.length && setRarityFilter(rf.rarity)}
                     disabled={tradeup.selectedItems.length > 0}
-                    className={`px-2 py-1 text-[11px] font-medium rounded transition-colors ${
-                      isActive
+                    className={`px-2 py-1 text-[11px] font-medium rounded transition-colors ${isActive
                         ? 'bg-slate-600 text-white'
                         : tradeup.selectedItems.length > 0
                           ? 'text-slate-600 cursor-not-allowed'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
-                    }`}
+                      }`}
                     style={isActive && rarityColor ? { backgroundColor: `${rarityColor}35`, color: rarityColor } : undefined}
                   >
                     {rf.label}
@@ -532,13 +529,12 @@ export default function TradeupPage({ auth, onNavigate }: Props) {
 
             {/* Progress indicator */}
             {tradeup.progress.state !== 'idle' && (
-              <div className={`mb-4 p-3 rounded-lg border ${
-                tradeup.progress.state === 'crafting'
+              <div className={`mb-4 p-3 rounded-lg border ${tradeup.progress.state === 'crafting'
                   ? 'bg-blue-600/10 border-blue-500/30'
                   : tradeup.progress.state === 'completed'
                     ? 'bg-green-600/10 border-green-500/30'
                     : 'bg-red-600/10 border-red-500/30'
-              }`}>
+                }`}>
                 <div className="flex items-center gap-2">
                   {tradeup.progress.state === 'crafting' && (
                     <svg className="w-4 h-4 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -556,13 +552,12 @@ export default function TradeupPage({ auth, onNavigate }: Props) {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   )}
-                  <span className={`text-xs ${
-                    tradeup.progress.state === 'crafting' ? 'text-blue-300' :
-                    tradeup.progress.state === 'completed' ? 'text-green-300' : 'text-red-300'
-                  }`}>
+                  <span className={`text-xs ${tradeup.progress.state === 'crafting' ? 'text-blue-300' :
+                      tradeup.progress.state === 'completed' ? 'text-green-300' : 'text-red-300'
+                    }`}>
                     {tradeup.progress.message || (
                       tradeup.progress.state === 'crafting' ? 'Executing trade-up...' :
-                      tradeup.progress.state === 'completed' ? 'Trade-up complete!' : 'Trade-up failed'
+                        tradeup.progress.state === 'completed' ? 'Trade-up complete!' : 'Trade-up failed'
                     )}
                   </span>
                 </div>
@@ -571,11 +566,10 @@ export default function TradeupPage({ auth, onNavigate }: Props) {
 
             {/* Result notification */}
             {tradeup.result && (
-              <div className={`mb-4 p-3 rounded-lg border ${
-                tradeup.result.success
+              <div className={`mb-4 p-3 rounded-lg border ${tradeup.result.success
                   ? 'bg-green-600/10 border-green-500/30'
                   : 'bg-red-600/10 border-red-500/30'
-              }`}>
+                }`}>
                 <div className="flex items-center gap-2">
                   {tradeup.result.success ? (
                     <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

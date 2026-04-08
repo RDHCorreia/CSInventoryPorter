@@ -8,7 +8,7 @@ import path from 'path';
 import type { ExchangeRates } from '../../shared/types';
 import type { LegacyCurrencyCode } from '../../shared/constants';
 
-const API_URL = 'https://v6.exchangerate-api.com/v6/ecc86eafb1f837168465d7bb/latest/USD';
+const API_URL = 'https://api.frankfurter.dev/v1/latest?base=USD';
 
 /** Cache exchange rates for 12 hours */
 const RATE_TTL_MS = 12 * 60 * 60 * 1000;
@@ -101,13 +101,13 @@ export class ExchangeRateService {
 
     const json = await response.json();
 
-    if (json.result !== 'success' || !json.conversion_rates) {
+    if (!json.rates) {
       throw new Error('Unexpected API response format');
     }
 
     this.rates = {
       base: 'USD',
-      rates: json.conversion_rates,
+      rates: { ...json.rates, USD: 1 },
       lastFetched: Date.now(),
     };
 

@@ -1,65 +1,53 @@
 # CSInventoryPorter
 
-Desktop CS2 inventory manager built with Electron + React + TypeScript.
+CSInventoryPorter is a desktop application built with Electron, React, and TypeScript designed to seamlessly manage your Counter-Strike 2 inventory. 
+It securely connects to your Steam account and the CS2 Game Coordinator, giving you powerful tools to oversee your items, prices, storage units, and trades.
 
-## Current scope
+## Features
 
-Implemented in general:
-- Steam login and account session handling (including saved accounts).
-- CS2 Game Coordinator connection and inventory loading.
-- Storage unit operations (load contents, move items in bulk, rename unit).
-- Price fetching and portfolio views.
-- Market listings management.
-- Trading flow (friends, inventories, offers).
-- Investments and trade-up workflows.
-- App settings and currency handling.
+- **Steam Integration:** Login and secure session handling with support for saved accounts.
+- **Inventory Management:** Connects to the CS2 Game Coordinator to comprehensively load your inventory.
+- **Storage Units:** Read the contents of your storage units, mass-move items in and out, and rename units easily.
+- **Economy & Value:** Automated price fetching and portfolio valuation tracking.
+- **Market & Trading:** Manage Steam Market listings, send trade offers, and handle friend/inventory trading flows.
+- **Investing & Trade-ups:** Helpful workflows for tracking investments and calculating trade-up contracts.
 
-Temporarily removed from active app flow while simplifying:
-- Store service/page.
-- Armory service/page.
+## Requirements
 
-## Tech stack
+- **Node.js**: Recommended to use v18 or newer.
+- **npm** (comes with Node.js)
+- A valid Steam account with Counter-Strike 2.
 
-- Electron
-- React
-- TypeScript
-- Vite (electron-vite)
-- Tailwind CSS
-- steam-user + globaloffensive
+## Build and Run
 
-## Run locally
+To compile and launch CSInventoryPorter locally, follow these steps:
 
-1. Install dependencies:
+1. **Clone the repository** and navigate to the project root directory.
 
-```bash
-npm install
-```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-2. Start development mode:
+3. **Start development mode**: 
+   Launches the Vite dev server and opens the Electron app natively.
+   ```bash
+   npm run dev
+   ```
 
-```bash
-npm run dev
-```
+4. **Build for production**: 
+   Compiles all frontend and backend assets.
+   ```bash
+   npm run build
+   ```
 
-## Build
+5. **Create a Windows Installer**:
+   To package the compiled app into an installer (`.exe`) via `electron-builder`:
+   ```bash
+   npm run package
+   ```
+   *The installer and unpacked artifacts will be generated in the `release/` or `dist/` directory.*
 
-Create production build output:
+## License
 
-```bash
-npm run build
-```
-
-## Create Windows installer
-
-Build and package with electron-builder:
-
-```bash
-npm run package
-```
-
-Installer artifacts are generated under the `release/` folder.
-
-## Notes
-
-- Main source code is under `src/`.
-- Packaged app output is under `release/win-unpacked/`.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details. You are free to use, modify, and distribute this software, but you must include the original copyright and permission notice in any copies or substantial portions of the software, thereby citing the original author.

@@ -1,7 +1,6 @@
 // ============================================================
 // CSInventoryPorter — Market Page
 // List items for sale, manage active listings, delist items
-// Phase 6: Market Listing Management
 // ============================================================
 
 import { useState, useMemo, useCallback, useEffect, useContext, useRef } from 'react';
@@ -305,21 +304,19 @@ function ListingDialog({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setInputMode('buyer')}
-              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
-                inputMode === 'buyer'
+              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${inputMode === 'buyer'
                   ? 'bg-blue-600 text-white'
                   : 'bg-slate-700 text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               Set buyer price
             </button>
             <button
               onClick={() => setInputMode('receive')}
-              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
-                inputMode === 'receive'
+              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${inputMode === 'receive'
                   ? 'bg-blue-600 text-white'
                   : 'bg-slate-700 text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               Set receive price
             </button>
@@ -365,11 +362,10 @@ function ListingDialog({
               }
             }}
             disabled={!isValid}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              isValid
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isValid
                 ? 'bg-green-600 hover:bg-green-500 text-white'
                 : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-            }`}
+              }`}
           >
             List for {symbol}{(fees.buyerPays / 100).toFixed(2)}
           </button>
@@ -518,21 +514,19 @@ function BulkListingDialog({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setInputMode('buyer')}
-              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
-                inputMode === 'buyer'
+              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${inputMode === 'buyer'
                   ? 'bg-blue-600 text-white'
                   : 'bg-slate-700 text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               Set buyer price
             </button>
             <button
               onClick={() => setInputMode('receive')}
-              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
-                inputMode === 'receive'
+              className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${inputMode === 'receive'
                   ? 'bg-blue-600 text-white'
                   : 'bg-slate-700 text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               Set receive price
             </button>
@@ -589,11 +583,10 @@ function BulkListingDialog({
               }
             }}
             disabled={!isValid}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              isValid
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isValid
                 ? 'bg-green-600 hover:bg-green-500 text-white'
                 : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-            }`}
+              }`}
           >
             List {quantity}× for {symbol}{(fees.buyerPays / 100).toFixed(2)} each
           </button>
@@ -774,17 +767,15 @@ function SelectedSellDialog({
         <div className="flex items-center gap-2 mb-4">
           <button
             onClick={() => setMode('same')}
-            className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
-              mode === 'same' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-slate-200'
-            }`}
+            className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${mode === 'same' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-slate-200'
+              }`}
           >
             Same price for all
           </button>
           <button
             onClick={() => setMode('individual')}
-            className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${
-              mode === 'individual' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-slate-200'
-            }`}
+            className={`flex-1 text-xs py-1.5 rounded-md transition-colors ${mode === 'individual' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-slate-200'
+              }`}
           >
             Individual prices
           </button>
@@ -919,9 +910,8 @@ function SelectedSellDialog({
           <button
             onClick={() => { if (isValid) onConfirm(requests); }}
             disabled={!isValid}
-            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              isValid ? 'bg-green-600 hover:bg-green-500 text-white' : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-            }`}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isValid ? 'bg-green-600 hover:bg-green-500 text-white' : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+              }`}
           >
             List {requests.length} item{requests.length !== 1 ? 's' : ''}
           </button>
@@ -993,11 +983,10 @@ function ListingCard({
           <p className="text-xs text-slate-400 truncate">{parsedName.weaponName}</p>
         )}
         <div className="flex items-center gap-2 mt-0.5">
-          <span className={`text-xs px-1.5 py-0.5 rounded ${
-            listing.status === 'active' ? 'bg-green-500/20 text-green-400' :
-            listing.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
-            'bg-blue-500/20 text-blue-400'
-          }`}>
+          <span className={`text-xs px-1.5 py-0.5 rounded ${listing.status === 'active' ? 'bg-green-500/20 text-green-400' :
+              listing.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                'bg-blue-500/20 text-blue-400'
+            }`}>
             {listing.status === 'active' ? 'Active' : listing.status === 'pending' ? 'Pending Confirmation' : 'Sold'}
           </span>
           {hasTradeHold && (
@@ -1085,11 +1074,10 @@ function ListableItem({
 
   return (
     <div
-      className={`group relative flex flex-col bg-slate-800/60 border rounded-lg overflow-hidden transition-colors cursor-pointer ${
-        selected
+      className={`group relative flex flex-col bg-slate-800/60 border rounded-lg overflow-hidden transition-colors cursor-pointer ${selected
           ? 'border-blue-500 ring-1 ring-blue-500/50'
           : 'border-slate-700/50 hover:border-slate-600'
-      }`}
+        }`}
       onClick={onSelect}
     >
       {/* Image */}
@@ -1124,9 +1112,8 @@ function ListableItem({
         )}
 
         {/* Selection indicator */}
-        <span className={`absolute top-1 left-1 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-          selected ? 'bg-blue-600 border-blue-600' : 'border-slate-500/50 bg-slate-800/50'
-        }`}>
+        <span className={`absolute top-1 left-1 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${selected ? 'bg-blue-600 border-blue-600' : 'border-slate-500/50 bg-slate-800/50'
+          }`}>
           {selected && (
             <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -1446,11 +1433,10 @@ export default function MarketPage({ auth, onNavigate }: Props) {
 
       {/* Notification toast */}
       {notification && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-xl border backdrop-blur-sm ${
-          notification.type === 'success'
+        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-xl border backdrop-blur-sm ${notification.type === 'success'
             ? 'bg-green-500/20 border-green-500/30 text-green-400'
             : 'bg-red-500/20 border-red-500/30 text-red-400'
-        }`}>
+          }`}>
           <p className="text-sm">{notification.message}</p>
         </div>
       )}
@@ -1483,17 +1469,15 @@ export default function MarketPage({ auth, onNavigate }: Props) {
               <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-0.5">
                 <button
                   onClick={() => setTab('list')}
-                  className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                    tab === 'list' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                  }`}
+                  className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${tab === 'list' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                    }`}
                 >
                   List Items
                 </button>
                 <button
                   onClick={() => { setTab('active'); fetchListings(); }}
-                  className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                    tab === 'active' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'
-                  }`}
+                  className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${tab === 'active' ? 'bg-green-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                    }`}
                 >
                   Active Listings {listings.length > 0 && `(${listings.length})`}
                 </button>

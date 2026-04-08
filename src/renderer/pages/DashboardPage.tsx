@@ -1,7 +1,6 @@
 // ============================================================
 // CSInventoryPorter — Dashboard Page
 // Shows inventory, storage units, and account info
-// Phase 3: Selection, move to/from casket, rename, bulk ops
 // ============================================================
 
 import { useState, useMemo, useCallback, memo, useContext, useEffect } from 'react';
@@ -123,7 +122,7 @@ function canMoveToStorage(item: InventoryItem): boolean {
     const isOnlyTradeLocked = !!(item.tradable_after && item.tradable_after > new Date());
     if (!isOnlyTradeLocked) return false;
   }
-  
+
   if (item.weapon_type === 'Collectible') return false;
   if (item.weapon_type === 'Pass' && item.market_name === 'Bonus Rank') return false;
 
@@ -132,7 +131,7 @@ function canMoveToStorage(item: InventoryItem): boolean {
   if (/\b(medal|coin|pin|trophy|service)\b/i.test(item.market_name || '') && item.weapon_type !== 'Container') {
     return false;
   }
-  
+
   return true;
 }
 
@@ -204,11 +203,9 @@ const ItemCard = memo(function ItemCard({
 
   return (
     <div
-      className={`bg-slate-700/50 hover:bg-slate-700 border rounded-lg transition-colors group relative ${
-        compact ? 'p-2' : 'p-3'
-      } ${selected ? 'ring-2 ring-blue-500 border-blue-500/50' : 'border-slate-600/50'} ${
-        onSelect ? (canSelect === false ? 'cursor-not-allowed opacity-60' : 'cursor-pointer') : ''
-      }`}
+      className={`bg-slate-700/50 hover:bg-slate-700 border rounded-lg transition-colors group relative ${compact ? 'p-2' : 'p-3'
+        } ${selected ? 'ring-2 ring-blue-500 border-blue-500/50' : 'border-slate-600/50'} ${onSelect ? (canSelect === false ? 'cursor-not-allowed opacity-60' : 'cursor-pointer') : ''
+        }`}
       title={item.custom_name ? `"${item.custom_name}" — ${displayName}` : displayName}
       onClick={onSelect}
     >
@@ -302,7 +299,7 @@ const ItemCard = memo(function ItemCard({
           <div className="flex items-center gap-1">
             {/* Steam icon */}
             <svg className="w-2.5 h-2.5 shrink-0 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.607 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.662 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.252 0-2.265-1.014-2.265-2.265z"/>
+              <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.607 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.662 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.252 0-2.265-1.014-2.265-2.265z" />
             </svg>
             {notOnSteam ? (
               <span className="text-amber-400 font-medium">Not on Steam</span>
@@ -444,9 +441,8 @@ function StorageUnitCard({
       <div className="flex items-center justify-between">
         <button
           onClick={handleCheckboxClick}
-          className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${
-            isChecked ? 'bg-blue-600 border-blue-600' : 'border-slate-500 hover:border-slate-400'
-          } ${unit.isLoading ? 'opacity-50' : ''}`}
+          className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${isChecked ? 'bg-blue-600 border-blue-600' : 'border-slate-500 hover:border-slate-400'
+            } ${unit.isLoading ? 'opacity-50' : ''}`}
           title={isChecked ? 'Hide items from All Items' : 'Show items in All Items'}
         >
           {unit.isLoading ? (
@@ -908,11 +904,10 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
               <div className="flex rounded-lg border border-slate-700 overflow-hidden">
                 <button
                   onClick={() => { setViewMode('all'); setOpenContainerId(null); clearSelection(); }}
-                  className={`px-3 py-2 text-xs font-medium transition-colors ${
-                    viewMode === 'all'
+                  className={`px-3 py-2 text-xs font-medium transition-colors ${viewMode === 'all'
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-800 text-slate-400 hover:text-slate-200'
-                  }`}
+                    }`}
                 >
                   All Items
                 </button>
@@ -960,15 +955,14 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
                   <button
                     key={speed}
                     onClick={() => setOperationSpeed(speed)}
-                    className={`px-2 py-1.5 text-[10px] font-medium transition-colors ${
-                      operationSpeed === speed
+                    className={`px-2 py-1.5 text-[10px] font-medium transition-colors ${operationSpeed === speed
                         ? speed === 'turbo'
                           ? 'bg-red-600 text-white'
                           : speed === 'fast'
                             ? 'bg-amber-600 text-white'
                             : 'bg-slate-600 text-white'
                         : 'bg-slate-800 text-slate-500 hover:text-slate-300'
-                    }`}
+                      }`}
                   >
                     {speed === 'normal' ? '0.5s' : speed === 'fast' ? '0.1s' : '0.025s'}
                   </button>
@@ -1336,50 +1330,48 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
               {inventory.storageUnits
                 .filter((u) => u.id !== openContainerId) // exclude source unit in unit-to-unit
                 .map((unit) => {
-                const available = 1000 - unit.item_count;
-                const canFit = available >= selectedIds.size;
-                return (
-                  <button
-                    key={unit.id}
-                    onClick={() => canFit && moveItemsToUnit(unit.id)}
-                    disabled={!canFit}
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${
-                      canFit
-                        ? 'bg-slate-700/50 hover:bg-slate-700 cursor-pointer'
-                        : 'bg-slate-700/20 opacity-40 cursor-not-allowed'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm truncate">
-                          {unit.custom_name || `Storage Unit #${unit.id}`}
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          {unit.item_count} / 1,000 items · {available} slots available
-                        </p>
-                      </div>
-                      {canFit && (
-                        <svg className="w-4 h-4 text-slate-400 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      )}
-                    </div>
-                    {/* Capacity bar */}
-                    <div className="w-full h-1 bg-slate-600 rounded-full overflow-hidden mt-2">
-                      <div
-                        className={`h-full rounded-full ${
-                          unit.item_count >= 900
-                            ? 'bg-red-400'
-                            : unit.item_count >= 500
-                              ? 'bg-yellow-400'
-                              : 'bg-green-400'
+                  const available = 1000 - unit.item_count;
+                  const canFit = available >= selectedIds.size;
+                  return (
+                    <button
+                      key={unit.id}
+                      onClick={() => canFit && moveItemsToUnit(unit.id)}
+                      disabled={!canFit}
+                      className={`w-full text-left p-3 rounded-lg transition-colors ${canFit
+                          ? 'bg-slate-700/50 hover:bg-slate-700 cursor-pointer'
+                          : 'bg-slate-700/20 opacity-40 cursor-not-allowed'
                         }`}
-                        style={{ width: `${Math.min(100, (unit.item_count / 1000) * 100)}%` }}
-                      />
-                    </div>
-                  </button>
-                );
-              })}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {unit.custom_name || `Storage Unit #${unit.id}`}
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            {unit.item_count} / 1,000 items · {available} slots available
+                          </p>
+                        </div>
+                        {canFit && (
+                          <svg className="w-4 h-4 text-slate-400 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        )}
+                      </div>
+                      {/* Capacity bar */}
+                      <div className="w-full h-1 bg-slate-600 rounded-full overflow-hidden mt-2">
+                        <div
+                          className={`h-full rounded-full ${unit.item_count >= 900
+                              ? 'bg-red-400'
+                              : unit.item_count >= 500
+                                ? 'bg-yellow-400'
+                                : 'bg-green-400'
+                            }`}
+                          style={{ width: `${Math.min(100, (unit.item_count / 1000) * 100)}%` }}
+                        />
+                      </div>
+                    </button>
+                  );
+                })}
             </div>
 
             <button
@@ -1397,9 +1389,9 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
         <div className="fixed inset-0 z-50 pointer-events-auto" onClick={() => setQuantityPicker(null)}>
           <div
             className="absolute bg-slate-800 border border-slate-700 rounded-lg shadow-xl p-3 w-64 popup-animate"
-            style={{ 
-              left: Math.min(quantityPicker.x - 128, window.innerWidth - 270), 
-              top: Math.min(quantityPicker.y + 10, window.innerHeight - 150) 
+            style={{
+              left: Math.min(quantityPicker.x - 128, window.innerWidth - 270),
+              top: Math.min(quantityPicker.y + 10, window.innerHeight - 150)
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -1454,13 +1446,13 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
       {/* ---- Rename Modal ---- */}
       {renamingUnit && (
         <div className="fixed inset-0 bg-black/60 z-[9999] flex flex-col items-center justify-center p-4 popup-animate" onClick={() => setRenamingUnit(null)}>
-          <div 
+          <div
             className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col w-[400px] shadow-2xl items-center text-center"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold text-white mb-2">Rename Storage Unit</h2>
             <p className="text-sm text-slate-400 mb-6">Enter a new name for your container unit.</p>
-            
+
             <input
               autoFocus
               value={renameInput}
@@ -1507,15 +1499,14 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
 
       {/* ---- Bulk Operation Progress ---- */}
       {inventory.operationProgress && (
-        <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 border rounded-xl shadow-2xl px-6 py-4 z-50 min-w-80 ${
-          inventory.operationProgress.state === 'completed'
+        <div className={`fixed bottom-4 left-1/2 -translate-x-1/2 border rounded-xl shadow-2xl px-6 py-4 z-50 min-w-80 ${inventory.operationProgress.state === 'completed'
             ? 'bg-green-900/80 border-green-500/50'
             : inventory.operationProgress.state === 'cancelled'
               ? 'bg-yellow-900/80 border-yellow-500/50'
               : inventory.operationProgress.state === 'error'
                 ? 'bg-red-900/80 border-red-500/50'
                 : 'bg-slate-800 border-blue-500/50'
-        }`}>
+          }`}>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">
               {inventory.operationProgress.state === 'running' && (
@@ -1542,13 +1533,12 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
           </div>
           <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-300 ${
-                inventory.operationProgress.state === 'completed'
+              className={`h-full rounded-full transition-all duration-300 ${inventory.operationProgress.state === 'completed'
                   ? 'bg-green-500'
                   : inventory.operationProgress.state === 'cancelled'
                     ? 'bg-yellow-500'
                     : 'bg-blue-500'
-              }`}
+                }`}
               style={{
                 width: `${inventory.operationProgress.total > 0
                   ? (inventory.operationProgress.completed / inventory.operationProgress.total) * 100

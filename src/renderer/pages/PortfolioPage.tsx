@@ -1,7 +1,6 @@
 // ============================================================
 // CSInventoryPorter — Portfolio Page
 // Shows inventory value history chart + item price breakdown
-// Phase 4: Market price integration
 // ============================================================
 
 import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
@@ -324,11 +323,10 @@ export default function PortfolioPage({ auth, onNavigate }: Props) {
                   <button
                     key={range}
                     onClick={() => setTimeRange(range)}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                      timeRange === range
+                    className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${timeRange === range
                         ? 'bg-blue-600 text-white'
                         : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700'
-                    }`}
+                      }`}
                   >
                     {TIME_RANGE_LABELS[range]}
                   </button>

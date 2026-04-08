@@ -2,7 +2,6 @@
 // CSInventoryPorter — Loading Page
 // Full-screen loading overlay shown after login
 // Loads inventory + storage units + prices before showing UI
-// Phase 6
 // ============================================================
 
 import { useState, useEffect, useRef } from 'react';

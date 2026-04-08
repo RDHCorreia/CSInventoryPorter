@@ -1,7 +1,6 @@
 // ============================================================
 // CSInventoryPorter — Home Page
 // Combined portfolio chart for all accounts + account cards
-// Phase 5: Multi-account support
 // ============================================================
 
 import { useState, useMemo, useCallback, useEffect, useContext } from 'react';
@@ -108,11 +107,10 @@ function AccountCard({
 
   return (
     <div
-      className={`bg-slate-800/50 border rounded-xl p-4 transition-all ${
-        account.isActive
+      className={`bg-slate-800/50 border rounded-xl p-4 transition-all ${account.isActive
           ? 'border-green-500/50 ring-1 ring-green-500/20'
           : 'border-slate-700 hover:border-slate-600'
-      }`}
+        }`}
     >
       <div className="flex items-center gap-3">
         {/* Avatar */}
@@ -139,9 +137,8 @@ function AccountCard({
         </div>
 
         {/* Status dot */}
-        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-          account.isActive ? 'bg-green-400' : 'bg-slate-600'
-        }`} />
+        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${account.isActive ? 'bg-green-400' : 'bg-slate-600'
+          }`} />
       </div>
 
       {/* Value row */}
@@ -294,11 +291,10 @@ export default function HomePage({ auth, onNavigate }: Props) {
                 <button
                   key={range}
                   onClick={() => setTimeRange(range)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                    timeRange === range
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${timeRange === range
                       ? 'bg-blue-600 text-white'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700'
-                  }`}
+                    }`}
                 >
                   {TIME_RANGE_LABELS[range]}
                 </button>

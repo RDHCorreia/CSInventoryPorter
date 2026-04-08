@@ -3,7 +3,6 @@
 //
 // To update this list when Valve adds or removes items:
 //   1. Find the new item's armoryId and star price
-//      (check https://github.com/gradinazz/cs2-stars or community sources)
 //   2. Add/remove/edit entries below
 //   3. Run `npm run build`
 //
@@ -38,24 +37,24 @@ const ARMORY_IMAGE = {
 
 export const ARMORY_ITEMS: ArmoryItemDef[] = [
   // ---- Charms ----
-  { name: 'Dr. Boom Charms',               price: 3,   armoryId: 1986856372, imageUrl: ARMORY_IMAGE.CHARM_DR_BOOM_REP,            category: 'charm' },
-  { name: 'Missing Link Community Charms', price: 3,   armoryId: 4187462448, imageUrl: ARMORY_IMAGE.CHARM_MISSING_COMMUNITY_LINK, category: 'charm' },
-  { name: 'Missing Link Charms',           price: 3,   armoryId: 4076345151, imageUrl: ARMORY_IMAGE.CHARM_MISSING_LINK,           category: 'charm' },
-  { name: 'Small Arms Charms',             price: 3,   armoryId: 2218434721, imageUrl: ARMORY_IMAGE.CHARM_SMALL_ARMS,             category: 'charm' },
+  { name: 'Dr. Boom Charms', price: 3, armoryId: 1986856372, imageUrl: ARMORY_IMAGE.CHARM_DR_BOOM_REP, category: 'charm' },
+  { name: 'Missing Link Community Charms', price: 3, armoryId: 4187462448, imageUrl: ARMORY_IMAGE.CHARM_MISSING_COMMUNITY_LINK, category: 'charm' },
+  { name: 'Missing Link Charms', price: 3, armoryId: 4076345151, imageUrl: ARMORY_IMAGE.CHARM_MISSING_LINK, category: 'charm' },
+  { name: 'Small Arms Charms', price: 3, armoryId: 2218434721, imageUrl: ARMORY_IMAGE.CHARM_SMALL_ARMS, category: 'charm' },
 
   // ---- Collections ----
-  { name: 'The Train 2025',                price: 4,   armoryId: 1629075955, imageUrl: ARMORY_IMAGE.COLLECTION_TRAIN_2025_REP,    category: 'collection' },
-  { name: 'The Overpass 2024',             price: 4,   armoryId: 2917110498, imageUrl: ARMORY_IMAGE.COLLECTION_OVERPASS_2024_REP, category: 'collection' },
-  { name: 'The Sport & Field',             price: 4,   armoryId: 531266704,  imageUrl: ARMORY_IMAGE.COLLECTION_SPORT_AND_FIELD,   category: 'collection' },
+  { name: 'The Train 2025', price: 4, armoryId: 1629075955, imageUrl: ARMORY_IMAGE.COLLECTION_TRAIN_2025_REP, category: 'collection' },
+  { name: 'The Overpass 2024', price: 4, armoryId: 2917110498, imageUrl: ARMORY_IMAGE.COLLECTION_OVERPASS_2024_REP, category: 'collection' },
+  { name: 'The Sport & Field', price: 4, armoryId: 531266704, imageUrl: ARMORY_IMAGE.COLLECTION_SPORT_AND_FIELD, category: 'collection' },
 
   // ---- Cases ----
-  { name: 'Fever Case',                    price: 2,   armoryId: 1025083006, imageUrl: ARMORY_IMAGE.CASE_FEVER,                   category: 'case' },
+  { name: 'Fever Case', price: 2, armoryId: 1025083006, imageUrl: ARMORY_IMAGE.CASE_FEVER, category: 'case' },
 
   // ---- Stickers ----
-  { name: '2025 Community Sticker',        price: 1,   armoryId: 2332851919, imageUrl: ARMORY_IMAGE.STICKER_COMMUNITY_REP,        category: 'sticker' },
-  { name: 'Sugarface 2 Sticker',           price: 1,   armoryId: 1531224355, imageUrl: ARMORY_IMAGE.STICKER_SUGARFACE_2,          category: 'sticker' },
-  { name: 'Elemental Craft Stickers',      price: 1,   armoryId: 594200331,  imageUrl: ARMORY_IMAGE.STICKER_ELEMENTAL_CRAFT,      category: 'sticker' },
+  { name: '2025 Community Sticker', price: 1, armoryId: 2332851919, imageUrl: ARMORY_IMAGE.STICKER_COMMUNITY_REP, category: 'sticker' },
+  { name: 'Sugarface 2 Sticker', price: 1, armoryId: 1531224355, imageUrl: ARMORY_IMAGE.STICKER_SUGARFACE_2, category: 'sticker' },
+  { name: 'Elemental Craft Stickers', price: 1, armoryId: 594200331, imageUrl: ARMORY_IMAGE.STICKER_ELEMENTAL_CRAFT, category: 'sticker' },
 
   // ---- Weapons ----
-  { name: 'AK-47 | Aphrodite',             price: 125, armoryId: 508216210,  imageUrl: ARMORY_IMAGE.WEAPON_AK47_APHRODITE,        category: 'weapon' },
+  { name: 'AK-47 | Aphrodite', price: 125, armoryId: 508216210, imageUrl: ARMORY_IMAGE.WEAPON_AK47_APHRODITE, category: 'weapon' },
 ];

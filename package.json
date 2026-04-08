@@ -9,8 +9,8 @@
     "package": "electron-vite build && electron-builder --config electron-builder.yml"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Rafael Correia",
+  "license": "MIT",
   "description": "CS2 Storage Unit Manager - Move items in and out of storage units with ease",
   "dependencies": {
     "cs2-inventory-resolver": "^0.2.0",

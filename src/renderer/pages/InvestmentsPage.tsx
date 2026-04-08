@@ -1,7 +1,6 @@
 // ============================================================
 // CSInventoryPorter — Investments Page
 // Track item purchases: cost basis, current value & profit/loss
-// Inspired by pricempire.com portfolio tracker
 // ============================================================
 
 import { useState, useMemo, useCallback, useEffect, useContext } from 'react';
@@ -85,7 +84,7 @@ export default function InvestmentsPage({ auth, onNavigate }: Props) {
         if (result.success && result.rates?.rates) {
           setExchangeRates(result.rates.rates);
         }
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [currencyVersion]);
 
