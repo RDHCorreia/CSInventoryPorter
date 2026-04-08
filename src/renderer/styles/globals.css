@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* ── CSInventoryPorter theme CSS custom properties ────────────────── */
+/* These are updated at runtime by useTheme hook.               */
+/* Default values match the "Dark Blue" preset.                 */
+:root {
+  --sp-bg: #0f172a;
+  --sp-surface: #1e293b;
+  --sp-card: #334155;
+  --sp-accent: #2563eb;
+  --sp-accent-hover: #3b82f6;
+  --sp-accent-light: #60a5fa;
+}
+
+/* Custom animation for loading spinner */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}

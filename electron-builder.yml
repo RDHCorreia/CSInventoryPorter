@@ -1,0 +1,31 @@
+appId: com.skinporter.app
+productName: SkinPorter
+directories:
+  buildResources: resources
+  output: release
+files:
+  - out/**/*
+  - node_modules/**/*
+  - package.json
+asarUnpack:
+  - "node_modules/lzma-native/**"
+  - "node_modules/steam-user/**"
+  - "node_modules/globaloffensive/**"
+  - "node_modules/steam-session/**"
+  - "node_modules/steam-tradeoffer-manager/**"
+  - "node_modules/cs2-inventory-resolver/**"
+win:
+  target: nsis
+  icon: resources/icon.png
+  forceCodeSigning: false
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  artifactName: "${productName}-Setup-${version}.${ext}"
+mac:
+  target: dmg
+  icon: resources/icon.png
+linux:
+  target: AppImage
+  icon: resources/icon.png
