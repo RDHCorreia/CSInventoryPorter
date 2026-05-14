@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAccounts } from '../hooks/useAccounts';
 import type { useAuth } from '../hooks/useAuth';
+import { STEAM_AVATAR_BASE } from '../../shared/constants';
 
 type LoginTab = 'credentials' | 'refreshToken' | 'browser' | 'qrCode' | 'saved';
 
@@ -72,6 +73,15 @@ export default function LoginPage({ auth, onBack }: Props) {
   const handleSavedAccountLogin = async (steamID: string) => {
     await loginSavedAccount(steamID);
     refreshAccounts();
+  };
+
+  const handleRemoveAccount = async (steamID: string, label: string) => {
+    if (!window.confirm(`Remove ${label} from saved accounts?`)) return;
+    try {
+      await removeAccount(steamID);
+    } catch (err) {
+      console.error('Failed to remove account:', err);
+    }
   };
 
   const handleSubmitGuardCode = (e: React.FormEvent) => {
@@ -343,18 +353,25 @@ export default function LoginPage({ auth, onBack }: Props) {
                   No saved accounts. Log in first to save one.
                 </p>
               ) : (
-                accounts.map((acc) => (
+                accounts.map((acc) => {
+                  const avatarUrl = acc.avatarUrl || (acc.avatarHash ? `${STEAM_AVATAR_BASE}${acc.avatarHash}_medium.jpg` : null);
+                  const label = acc.personaName || acc.accountName || acc.steamID;
+
+                  return (
                   <div
                     key={acc.steamID}
                     className="flex items-center gap-3 bg-slate-700/50 hover:bg-slate-700 rounded-lg p-3 transition-colors group"
                   >
-                    {/* Avatar placeholder */}
-                    <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 uppercase shrink-0">
-                      {acc.personaName?.charAt(0) || '?'}
+                    <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 uppercase shrink-0 overflow-hidden">
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        acc.personaName?.charAt(0) || '?'
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{acc.personaName}</p>
-                      <p className="text-xs text-slate-400 truncate">{acc.accountName}</p>
+                      <p className="font-medium truncate">{acc.personaName || acc.accountName || acc.steamID}</p>
+                      <p className="text-xs text-slate-400 truncate">{acc.accountName || acc.steamID}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {acc.refreshToken && (
@@ -367,7 +384,7 @@ export default function LoginPage({ auth, onBack }: Props) {
                         </button>
                       )}
                       <button
-                        onClick={() => removeAccount(acc.steamID)}
+                        onClick={() => handleRemoveAccount(acc.steamID, label)}
                         className="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1"
                         title="Remove account"
                       >
@@ -377,7 +394,8 @@ export default function LoginPage({ auth, onBack }: Props) {
                       </button>
                     </div>
                   </div>
-                ))
+                  );
+                })
               )}
             </div>
           )}

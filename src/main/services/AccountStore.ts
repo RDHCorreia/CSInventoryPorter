@@ -15,6 +15,7 @@ interface StoredAccount {
   steamID: string;
   personaName: string;
   avatarHash?: string;
+  avatarUrl?: string;
   /** Base64-encoded encrypted refresh token */
   encryptedRefreshToken?: string;
   lastLogin?: number;
@@ -139,6 +140,7 @@ export class AccountStore {
       steamID: a.steamID,
       personaName: a.personaName,
       avatarHash: a.avatarHash,
+      avatarUrl: a.avatarUrl,
       refreshToken: a.encryptedRefreshToken ? '(saved)' : undefined,
       lastLogin: a.lastLogin,
     }));
@@ -154,6 +156,7 @@ export class AccountStore {
       steamID: stored.steamID,
       personaName: stored.personaName,
       avatarHash: stored.avatarHash,
+      avatarUrl: stored.avatarUrl,
       refreshToken: stored.encryptedRefreshToken
         ? this.decryptToken(stored.encryptedRefreshToken)
         : undefined,
@@ -170,6 +173,7 @@ export class AccountStore {
       steamID: account.steamID,
       personaName: account.personaName,
       avatarHash: account.avatarHash,
+      avatarUrl: account.avatarUrl,
       encryptedRefreshToken: account.refreshToken
         ? this.encryptToken(account.refreshToken)
         : this.accounts.get(account.steamID)?.encryptedRefreshToken,

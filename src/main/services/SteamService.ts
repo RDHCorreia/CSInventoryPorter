@@ -229,6 +229,7 @@ export class SteamService extends EventEmitter {
       }
 
       this.emit('account-info', this._accountInfo);
+      this.refreshOwnPersonaDetails();
     });
 
     this.client.on('wallet', (hasWallet: boolean, currency: number, balance: number) => {
@@ -279,6 +280,35 @@ export class SteamService extends EventEmitter {
       console.error('[SteamService] GC error:', err.message);
       this.emit('error', err);
     });
+  }
+
+  /** Save the whole account information to disk, so it can be loaded later */
+  private async refreshOwnPersonaDetails(): Promise<void> {
+    const steamID = this.client.steamID?.getSteamID64();
+    if (!steamID || !this._accountInfo) return;
+
+    try {
+      const result = await this.client.getPersonas([steamID]);
+      const personas = (result as any).personas || result;
+      const persona = personas?.[steamID];
+      if (!persona || !this._accountInfo) return;
+
+      this._accountInfo = {
+        ...this._accountInfo,
+        personaName: persona.player_name || this._accountInfo.personaName,
+        avatarHash: persona.avatar_hash || persona.avatarHash || this._accountInfo.avatarHash,
+        avatarUrl:
+          persona.avatar_url_full ||
+          persona.avatar_url_medium ||
+          persona.avatar_url_icon ||
+          this._accountInfo.avatarUrl,
+      };
+
+      this.emit('account-info', this._accountInfo);
+      this.setState(this._state);
+    } catch (err: any) {
+      console.warn('[SteamService] Failed to refresh persona details:', err.message);
+    }
   }
 
   // ---- Login methods ----

@@ -48,6 +48,7 @@ export interface SavedAccount {
   steamID: string;
   personaName: string;
   avatarHash?: string;
+  avatarUrl?: string;
   refreshToken?: string; // Encrypted at rest
   lastLogin?: number;    // Unix timestamp
 }
@@ -57,6 +58,7 @@ export interface AccountInfo {
   accountName: string;
   personaName: string;
   avatarHash?: string;
+  avatarUrl?: string;
   country?: string;
   walletBalance?: number;
   walletCurrency?: number;
@@ -240,6 +242,7 @@ export interface AccountSnapshot {
   accountName: string;
   personaName: string;
   avatarHash?: string;
+  avatarUrl?: string;
   totalValue: number;
   totalItems: number;
   lastUpdated: number;
@@ -251,6 +254,7 @@ export interface AccountSnapshotSummary {
   accountName: string;
   personaName: string;
   avatarHash?: string;
+  avatarUrl?: string;
   totalValue: number;
   totalItems: number;
   lastUpdated: number;

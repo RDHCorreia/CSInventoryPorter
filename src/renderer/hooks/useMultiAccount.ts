@@ -86,5 +86,14 @@ export function useMultiAccount() {
     return result;
   }, [refresh]);
 
-  return { summary, loading, refresh, switchAccount };
+  const removeAccount = useCallback(async (steamID: string) => {
+    const result = await api().removeAccount(steamID);
+    if (!result.success) {
+      throw new Error('Account was not removed');
+    }
+    await refresh();
+    return result;
+  }, [refresh]);
+
+  return { summary, loading, refresh, switchAccount, removeAccount };
 }

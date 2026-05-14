@@ -78,6 +78,7 @@ export class AccountManager extends EventEmitter {
   private settingsPath: string;
   private backgroundPricingPromise: Promise<void> | null = null;
   private fullLoadSessionId = 0;
+  private snapshotSaveTimer: ReturnType<typeof setTimeout> | null = null;
   /** Pending refresh token waiting for a steamID (token arrives before account-info) */
   private _pendingRefreshToken: string | null = null;
 
@@ -198,6 +199,7 @@ export class AccountManager extends EventEmitter {
           steamID: info.steamID,
           personaName: info.personaName || existing?.personaName || info.accountName || '',
           avatarHash: info.avatarHash || existing?.avatarHash,
+          avatarUrl: info.avatarUrl || existing?.avatarUrl,
           refreshToken,
         });
       }
@@ -263,6 +265,12 @@ export class AccountManager extends EventEmitter {
           .catch((err: any) => console.warn('[AccountManager] Tradability enrichment failed:', err.message));
       };
       this.inventoryService.on('inventory-updated', enrichOnLoad);
+    });
+
+    this.inventoryService.on('inventory-updated', (data: InventoryData) => {
+      if (data.state === 'loaded') {
+        this.scheduleSnapshotSave();
+      }
     });
 
     // When GC disconnects, detach
@@ -353,7 +361,17 @@ export class AccountManager extends EventEmitter {
      *
      */
     removeAccount(steamID: string): boolean {
-    return this.accountStore.removeAccount(steamID);
+    const removed = this.accountStore.removeAccount(steamID);
+    if (!removed) return false;
+
+    const activeId = this.steamService.steamClient.steamID?.getSteamID64();
+    if (activeId === steamID) {
+      this.logout();
+    }
+
+    this.removeSnapshot(steamID);
+
+    return true;
   }
 
   // ---- Event forwarding helpers ----
@@ -1048,6 +1066,22 @@ export class AccountManager extends EventEmitter {
 
   // ---- Multi-account (Phase 5) ----
 
+  private getAllKnownItems(invData: InventoryData): InventoryItem[] {
+    const allItems = [...invData.items];
+    for (const unit of invData.storageUnits) {
+      if (unit.items?.length) allItems.push(...unit.items);
+    }
+    return allItems;
+  }
+
+  private scheduleSnapshotSave(delayMs = 2000): void {
+    if (this.snapshotSaveTimer) clearTimeout(this.snapshotSaveTimer);
+    this.snapshotSaveTimer = setTimeout(() => {
+      this.snapshotSaveTimer = null;
+      this.saveCurrentSnapshot();
+    }, delayMs);
+  }
+
   /** Save the current account's inventory snapshot to disk */
   saveCurrentSnapshot(): void {
     const steamID = this.steamService.steamClient.steamID?.getSteamID64();
@@ -1056,10 +1090,7 @@ export class AccountManager extends EventEmitter {
     const invData = this.inventoryService.inventoryData;
     if (invData.state !== 'loaded') return;
 
-    const allItems = [...invData.items];
-    for (const unit of invData.storageUnits) {
-      if (unit.items?.length) allItems.push(...unit.items);
-    }
+    const allItems = this.getAllKnownItems(invData);
 
     const itemQuantities: Record<string, number> = {};
     for (const item of allItems) {
@@ -1070,11 +1101,13 @@ export class AccountManager extends EventEmitter {
     }
 
     const info = this.steamService.accountInfo;
+    const savedAccount = this.accountStore.getAccount(steamID);
     const snapshot: AccountSnapshot = {
       steamID,
-      accountName: info?.accountName ?? '',
-      personaName: info?.personaName ?? '',
-      avatarHash: info?.avatarHash,
+      accountName: info?.accountName || savedAccount?.accountName || '',
+      personaName: info?.personaName || savedAccount?.personaName || '',
+      avatarHash: info?.avatarHash || savedAccount?.avatarHash,
+      avatarUrl: info?.avatarUrl || savedAccount?.avatarUrl,
       totalValue: this.pricingService.computeTotalValueFromMap(itemQuantities),
       totalItems: allItems.length,
       lastUpdated: Date.now(),
@@ -1092,6 +1125,15 @@ export class AccountManager extends EventEmitter {
       );
     } catch (err: any) {
       console.warn('[AccountManager] Failed to save snapshot:', err.message);
+    }
+  }
+
+  private removeSnapshot(steamID: string): void {
+    try {
+      const filePath = path.join(this.snapshotDir, `${steamID}.json`);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    } catch (err: any) {
+      console.warn(`[AccountManager] Failed to remove snapshot for ${steamID}:`, err.message);
     }
   }
 
@@ -1152,18 +1194,15 @@ export class AccountManager extends EventEmitter {
       if (isActive && this.inventoryService.inventoryData.state === 'loaded') {
         // Use live data for the active account
         const invData = this.inventoryService.inventoryData;
-        const allItems = [...invData.items];
-        for (const unit of invData.storageUnits) {
-          if (unit.items?.length) allItems.push(...unit.items);
-        }
+        const allItems = this.getAllKnownItems(invData);
 
         const liveQuantities: Record<string, number> = {};
         for (const item of allItems) {
-          const name = this.pricingService.getMarketHashName(item);
-          if (name) {
-            liveQuantities[name] = (liveQuantities[name] ?? 0) + 1;
-            combinedQuantities[name] = (combinedQuantities[name] ?? 0) + 1;
-          }
+          const marketHashName = this.pricingService.getMarketHashName(item);
+          const fallbackName = item.market_name || item.custom_name || `Item #${item.defindex}`;
+          const name = marketHashName || fallbackName;
+          liveQuantities[name] = (liveQuantities[name] ?? 0) + 1;
+          combinedQuantities[name] = (combinedQuantities[name] ?? 0) + 1;
         }
 
         const value = this.pricingService.computeTotalValueFromMap(liveQuantities);
@@ -1174,8 +1213,9 @@ export class AccountManager extends EventEmitter {
           accountName: account.accountName,
           personaName: account.personaName,
           avatarHash: account.avatarHash,
+          avatarUrl: account.avatarUrl,
           totalValue: value,
-          totalItems: invData.totalItems,
+          totalItems: allItems.length,
           lastUpdated: Date.now(),
           hasRefreshToken: !!account.refreshToken,
           isActive: true,
@@ -1194,6 +1234,7 @@ export class AccountManager extends EventEmitter {
             accountName: account.personaName ?? account.accountName,
             personaName: account.personaName,
             avatarHash: account.avatarHash,
+            avatarUrl: account.avatarUrl,
             totalValue: freshValue,
             totalItems: snapshot.totalItems,
             lastUpdated: snapshot.lastUpdated,
@@ -1206,6 +1247,7 @@ export class AccountManager extends EventEmitter {
             accountName: account.accountName,
             personaName: account.personaName,
             avatarHash: account.avatarHash,
+            avatarUrl: account.avatarUrl,
             totalValue: 0,
             totalItems: 0,
             lastUpdated: account.lastLogin ?? 0,
@@ -1229,7 +1271,8 @@ export class AccountManager extends EventEmitter {
             steamID: account.steamID,
             accountName: snapshot.accountName,
             personaName: snapshot.personaName,
-            avatarHash: snapshot.avatarHash,
+            avatarHash: snapshot.avatarHash || account.avatarHash,
+            avatarUrl: snapshot.avatarUrl || account.avatarUrl,
             totalValue: freshValue,
             totalItems: snapshot.totalItems,
             lastUpdated: snapshot.lastUpdated,
@@ -1243,6 +1286,7 @@ export class AccountManager extends EventEmitter {
             accountName: account.accountName,
             personaName: account.personaName,
             avatarHash: account.avatarHash,
+            avatarUrl: account.avatarUrl,
             totalValue: 0,
             totalItems: 0,
             lastUpdated: account.lastLogin ?? 0,
@@ -1311,6 +1355,10 @@ export class AccountManager extends EventEmitter {
      *
      */
     destroy(): void {
+    if (this.snapshotSaveTimer) {
+      clearTimeout(this.snapshotSaveTimer);
+      this.snapshotSaveTimer = null;
+    }
     this.saveCurrentSnapshot();
     this.tradeupService.destroy();
     this.tradeService.destroy();

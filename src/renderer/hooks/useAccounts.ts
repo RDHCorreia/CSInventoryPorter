@@ -36,7 +36,10 @@ export function useAccounts() {
 
   const removeAccount = useCallback(
     async (steamID: string) => {
-      await api().removeAccount(steamID);
+      const result = await api().removeAccount(steamID);
+      if (!result.success) {
+        throw new Error('Account was not removed');
+      }
       await refresh();
     },
     [refresh],

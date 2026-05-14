@@ -93,17 +93,19 @@ function AccountCard({
   isSwitching,
   onSwitch,
   onViewPortfolio,
+  onRemove,
   formatPrice,
 }: {
   account: AccountSnapshotSummary;
   isSwitching: boolean;
   onSwitch: () => void;
   onViewPortfolio: () => void;
+  onRemove: () => void;
   formatPrice: (value: number) => string;
 }) {
-  const avatarUrl = account.avatarHash
+  const avatarUrl = account.avatarUrl || (account.avatarHash
     ? `${STEAM_AVATAR_BASE}${account.avatarHash}_medium.jpg`
-    : null;
+    : null);
 
   return (
     <div
@@ -136,9 +138,19 @@ function AccountCard({
           </div>
         </div>
 
-        {/* Status dot */}
-        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${account.isActive ? 'bg-green-400' : 'bg-slate-600'
-          }`} />
+        <div className="flex items-center gap-2 shrink-0">
+          <div className={`w-2.5 h-2.5 rounded-full ${account.isActive ? 'bg-green-400' : 'bg-slate-600'
+            }`} />
+          <button
+            onClick={onRemove}
+            className="text-slate-500 hover:text-red-400 transition-colors p-1"
+            title="Remove saved account"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Value row */}
@@ -188,7 +200,7 @@ function AccountCard({
  */
 export default function HomePage({ auth, onNavigate }: Props) {
   const { status, logout } = auth;
-  const { summary, loading, refresh, switchAccount } = useMultiAccount();
+  const { summary, loading, refresh, switchAccount, removeAccount } = useMultiAccount();
   const { currency, symbol, formatPrice, formatPriceShort, currencyVersion } = useContext(CurrencyContext);
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
   const [switchingId, setSwitchingId] = useState<string | null>(null);
@@ -210,6 +222,17 @@ export default function HomePage({ auth, onNavigate }: Props) {
     }
     // switchingId cleared when gcConnected status arrives
   }, [switchAccount]);
+
+  const handleRemoveAccount = useCallback(async (account: AccountSnapshotSummary) => {
+    const label = account.personaName || account.accountName || account.steamID;
+    if (!window.confirm(`Remove ${label} from saved accounts?`)) return;
+
+    try {
+      await removeAccount(account.steamID);
+    } catch (err) {
+      console.error('Failed to remove account:', err);
+    }
+  }, [removeAccount]);
 
   // Clear switching indicator when connected
   useEffect(() => {
@@ -399,6 +422,7 @@ export default function HomePage({ auth, onNavigate }: Props) {
                 isSwitching={switchingId === account.steamID || (isConnecting && switchingId === account.steamID)}
                 onSwitch={() => handleSwitch(account.steamID)}
                 onViewPortfolio={() => onNavigate('portfolio')}
+                onRemove={() => handleRemoveAccount(account)}
                 formatPrice={formatPrice}
               />
             ))}
