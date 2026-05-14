@@ -57,7 +57,7 @@ To compile and launch CSInventoryPorter locally, follow these steps:
 **Q: Is my Steam account safe?**
 A: Yes, CSInventoryPorter only communicates directly with steam secure methods and does not store your credentials anywhere besides your local machine when you allow it to store your refresh token. Always ensure you download the application from a trusted source.
 
-**Q: Can I be VAC banned?
+**Q: Can I be VAC banned?**
 A: No, CSInventoryPorter interacts with [Steam-User](https://github.com/DoctorMcKay/node-steam-user) and [Global-Offensive](https://github.com/DoctorMcKay/node-globaloffensive) in a way that is compliant with their terms of service. However, always use the application responsibly and avoid any actions that could be considered abusive.
 
 ## License

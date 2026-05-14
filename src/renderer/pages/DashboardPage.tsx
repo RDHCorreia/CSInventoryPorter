@@ -161,8 +161,12 @@ function getItemTypeForFilter(item: InventoryItem): Exclude<ItemTypeFilter, 'all
 
 // ---- Speed presets for bulk operations ----
 
-const SPEED_DELAYS = { normal: 500, fast: 100, turbo: 25 } as const;
+const SPEED_DELAYS = { fast: 300, superFast: 50 } as const;
 type OperationSpeed = keyof typeof SPEED_DELAYS;
+const SPEED_LABELS: Record<OperationSpeed, string> = {
+  fast: 'Fast',
+  superFast: 'Super Fast',
+};
 
 // ---- Item Card Component (memoized for perf) ----
 
@@ -560,7 +564,7 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
   const [renamingUnit, setRenamingUnit] = useState<StorageUnit | null>(null);
   const [renameInput, setRenameInput] = useState('');
   // Speed control for bulk operations
-  const [operationSpeed, setOperationSpeed] = useState<OperationSpeed>('normal');
+  const [operationSpeed, setOperationSpeed] = useState<OperationSpeed>('fast');
   // Quantity picker for stacked items
   const [quantityPicker, setQuantityPicker] = useState<{
     allItems: InventoryItem[];
@@ -950,21 +954,21 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
               </div>
 
               {/* Speed control */}
-              <div className="flex rounded-lg border border-slate-700 overflow-hidden" title="Delay between operations">
-                {(['normal', 'fast', 'turbo'] as const).map((speed) => (
+              <div className="flex rounded-lg border border-slate-700 overflow-hidden" title="Transfer speed">
+                {(['fast', 'superFast'] as const).map((speed) => (
                   <button
                     key={speed}
                     onClick={() => setOperationSpeed(speed)}
                     className={`px-2 py-1.5 text-[10px] font-medium transition-colors ${operationSpeed === speed
-                        ? speed === 'turbo'
+                        ? speed === 'superFast'
                           ? 'bg-red-600 text-white'
-                          : speed === 'fast'
-                            ? 'bg-amber-600 text-white'
-                            : 'bg-slate-600 text-white'
-                        : 'bg-slate-800 text-slate-500 hover:text-slate-300'
+                          : 'bg-emerald-600 text-white'
+                        : speed === 'superFast'
+                          ? 'bg-slate-800 text-red-300/60 hover:text-red-300'
+                          : 'bg-slate-800 text-emerald-300/60 hover:text-emerald-300'
                       }`}
                   >
-                    {speed === 'normal' ? '0.5s' : speed === 'fast' ? '0.1s' : '0.025s'}
+                    {SPEED_LABELS[speed]}
                   </button>
                 ))}
               </div>
@@ -1322,7 +1326,7 @@ export default function DashboardPage({ auth, onNavigate }: Props) {
                 : `Moving ${selectedIds.size} item${selectedIds.size > 1 ? 's' : ''}`
               }
               <span className="ml-1 text-slate-500">
-                ({operationSpeed === 'normal' ? '0.5s' : operationSpeed === 'fast' ? '0.1s' : '0.025s'} delay)
+                ({SPEED_LABELS[operationSpeed]} speed)
               </span>
             </p>
 
