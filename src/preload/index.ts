@@ -5,7 +5,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 import { IPC } from '../shared/types';
-import type { InventoryItem, TradeupPrediction } from '../shared/types';
+import type { InventoryExportOptions, InventoryExportResult, InventoryItem, TradeupPrediction } from '../shared/types';
 import type { CurrencyCode } from '../shared/constants';
 
 export interface CSInventoryPorterAPI {
@@ -28,6 +28,7 @@ export interface CSInventoryPorterAPI {
   getInventory: () => Promise<any>;
   loadInventory: () => Promise<{ success: boolean; error?: string }>;
   loadCasketContents: (casketId: string) => Promise<{ success: boolean; items?: any[]; error?: string }>;
+  exportInventory: (options: InventoryExportOptions) => Promise<InventoryExportResult>;
 
   // Casket operations (Phase 3)
   executeBulkOperation: (operations: any[], delayMs?: number, itemCount?: number) => Promise<{ success: boolean; error?: string }>;
@@ -138,6 +139,7 @@ const api: CSInventoryPorterAPI = {
   getInventory: () => ipcRenderer.invoke(IPC.INVENTORY_GET),
   loadInventory: () => ipcRenderer.invoke(IPC.INVENTORY_LOAD),
   loadCasketContents: (casketId) => ipcRenderer.invoke(IPC.CASKET_CONTENTS, casketId),
+  exportInventory: (options) => ipcRenderer.invoke(IPC.INVENTORY_EXPORT, options),
 
   // ---- Casket operations (Phase 3) ----
   executeBulkOperation: (operations, delayMs?, itemCount?) => ipcRenderer.invoke(IPC.CASKET_ADD, operations, delayMs, itemCount),

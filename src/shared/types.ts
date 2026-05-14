@@ -247,6 +247,19 @@ export interface AccountSnapshot {
   totalItems: number;
   lastUpdated: number;
   itemQuantities: Record<string, number>;
+  exportItems?: AccountSnapshotExportItem[];
+}
+
+export interface AccountSnapshotExportItem {
+  itemName: string;
+  marketHashName: string;
+  itemType?: InventoryExportItemType;
+  quantity: number;
+  location: 'inventory' | 'storage' | 'snapshot';
+  storageUnitName?: string;
+  wear?: number;
+  paintIndex?: number;
+  hasCustomName?: boolean;
 }
 
 export interface AccountSnapshotSummary {
@@ -267,6 +280,48 @@ export interface MultiAccountSummary {
   combinedValue: number;
   combinedHistory: PortfolioSnapshot[];
   activeAccountId: string | null;
+}
+
+export type InventoryExportFormat = 'csv';
+export type InventoryExportScope = 'active' | 'account' | 'all';
+export type InventoryExportItemType =
+  | 'weapon'
+  | 'case'
+  | 'sticker'
+  | 'graffiti'
+  | 'charm'
+  | 'agent'
+  | 'container'
+  | 'music'
+  | 'tool'
+  | 'collectible'
+  | 'other';
+
+export type InventoryExportColumn =
+  | 'accountName'
+  | 'itemName'
+  | 'quantity'
+  | 'storageUnitName'
+  | 'wear'
+  | 'paintIndex'
+  | 'price'
+  | 'totalPrice';
+
+export interface InventoryExportOptions {
+  scope: InventoryExportScope;
+  steamID?: string;
+  exportName?: string;
+  format: InventoryExportFormat;
+  columns: InventoryExportColumn[];
+  includePrices: boolean;
+  itemTypes: InventoryExportItemType[];
+}
+
+export interface InventoryExportResult {
+  success: boolean;
+  filePath?: string;
+  rowCount?: number;
+  error?: string;
 }
 
 export interface MarketListing {
@@ -504,6 +559,7 @@ export const IPC = {
   INVENTORY_LOAD: 'inventory:load',
   INVENTORY_UPDATED: 'inventory:updated',
   INVENTORY_GET: 'inventory:get',
+  INVENTORY_EXPORT: 'inventory:export',
 
   // Casket / Storage Units
   CASKET_CONTENTS: 'casket:contents',

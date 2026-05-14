@@ -14,7 +14,9 @@ import type { PortfolioSnapshot, AccountSnapshotSummary } from '../../shared/typ
 import { STEAM_AVATAR_BASE } from '../../shared/constants';
 import { CurrencyContext } from '../App';
 import NavBar from '../components/NavBar';
+import InventoryExportDialog from '../components/InventoryExportDialog';
 import { type AppPage, type TimeRange, TIME_RANGE_LABELS, TIME_RANGE_MS, timeAgo } from '../utils/itemUtils';
+import type { InventoryExportOptions } from '../../shared/types';
 
 interface Props {
   auth: ReturnType<typeof useAuth>;
@@ -94,6 +96,7 @@ function AccountCard({
   onSwitch,
   onViewPortfolio,
   onRemove,
+  onExport,
   formatPrice,
 }: {
   account: AccountSnapshotSummary;
@@ -101,6 +104,7 @@ function AccountCard({
   onSwitch: () => void;
   onViewPortfolio: () => void;
   onRemove: () => void;
+  onExport: () => void;
   formatPrice: (value: number) => string;
 }) {
   const avatarUrl = account.avatarUrl || (account.avatarHash
@@ -165,24 +169,32 @@ function AccountCard({
         </div>
 
         {/* Action button */}
-        {account.isActive ? (
+        <div className="flex items-center gap-2">
           <button
-            onClick={onViewPortfolio}
-            className="text-xs px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 transition-colors font-medium"
+            onClick={onExport}
+            className="text-xs px-2.5 py-1.5 rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600 transition-colors font-medium"
           >
-            View Portfolio
+            Export
           </button>
-        ) : account.hasRefreshToken ? (
-          <button
-            onClick={onSwitch}
-            disabled={isSwitching}
-            className="text-xs px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600 disabled:opacity-50 transition-colors font-medium"
-          >
-            {isSwitching ? 'Switching...' : 'Switch'}
-          </button>
-        ) : (
-          <span className="text-[10px] text-slate-600">No saved login</span>
-        )}
+          {account.isActive ? (
+            <button
+              onClick={onViewPortfolio}
+              className="text-xs px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 transition-colors font-medium"
+            >
+              Portfolio
+            </button>
+          ) : account.hasRefreshToken ? (
+            <button
+              onClick={onSwitch}
+              disabled={isSwitching}
+              className="text-xs px-3 py-1.5 rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600 disabled:opacity-50 transition-colors font-medium"
+            >
+              {isSwitching ? 'Switching...' : 'Switch'}
+            </button>
+          ) : (
+            <span className="text-[10px] text-slate-600">No saved login</span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -204,6 +216,7 @@ export default function HomePage({ auth, onNavigate }: Props) {
   const { currency, symbol, formatPrice, formatPriceShort, currencyVersion } = useContext(CurrencyContext);
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
   const [switchingId, setSwitchingId] = useState<string | null>(null);
+  const [exportTarget, setExportTarget] = useState<{ title: string; scope: 'all' | 'account'; steamID?: string } | null>(null);
 
   const isConnected =
     status.state === 'loggedIn' ||
@@ -305,6 +318,16 @@ export default function HomePage({ auth, onNavigate }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
                 Refresh
+              </button>
+              <button
+                onClick={() => setExportTarget({ title: 'Export All Accounts', scope: 'all' })}
+                disabled={!hasAccounts}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors disabled:opacity-50"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 7H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v10a2 2 0 01-2 2z" />
+                </svg>
+                Export
               </button>
             </div>
 
@@ -423,6 +446,11 @@ export default function HomePage({ auth, onNavigate }: Props) {
                 onSwitch={() => handleSwitch(account.steamID)}
                 onViewPortfolio={() => onNavigate('portfolio')}
                 onRemove={() => handleRemoveAccount(account)}
+                onExport={() => setExportTarget({
+                  title: `Export ${account.personaName || account.accountName}`,
+                  scope: 'account',
+                  steamID: account.steamID,
+                })}
                 formatPrice={formatPrice}
               />
             ))}
@@ -442,6 +470,20 @@ export default function HomePage({ auth, onNavigate }: Props) {
           </div>
         </div>
       </main>
+
+      <InventoryExportDialog
+        open={!!exportTarget}
+        title={exportTarget?.title || 'Export Inventory'}
+        scope={exportTarget?.scope || 'all'}
+        steamID={exportTarget?.steamID}
+        onClose={() => setExportTarget(null)}
+        onExport={async (options: InventoryExportOptions) => {
+          const result = await window.csinventoryporter.exportInventory(options);
+          if (!result.success) {
+            throw new Error(result.error || 'Export failed.');
+          }
+        }}
+      />
     </div>
   );
 }

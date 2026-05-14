@@ -14,6 +14,7 @@ import { usePricing } from '../hooks/usePricing';
 import type { InventoryItem, StorageUnit, PortfolioSnapshot, ItemPriceData, SkinportPriceData } from '../../shared/types';
 import { CurrencyContext } from '../App';
 import NavBar from '../components/NavBar';
+import InventoryExportDialog from '../components/InventoryExportDialog';
 import { type AppPage, type TimeRange, TIME_RANGE_LABELS, TIME_RANGE_MS, getWearCondition, getMarketHashName } from '../utils/itemUtils';
 
 interface Props {
@@ -74,12 +75,14 @@ function computeChange(history: PortfolioSnapshot[], rangeMs: number): { amount:
  */
 export default function PortfolioPage({ auth, onNavigate }: Props) {
   const { status, logout } = auth;
-  const { state, items, storageUnits } = useInventory();
+  const inventory = useInventory();
+  const { state, items, storageUnits } = inventory;
   const { pricingProgress, portfolioData, fetchPrices, cancelFetch, loadPortfolioData } = usePricing();
 
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
   const [sortBy, setSortBy] = useState<'value' | 'name' | 'price'>('value');
   const [autoFetched, setAutoFetched] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
   const { currency, symbol, formatPrice, currencyVersion } = useContext(CurrencyContext);
 
   // Load portfolio data on mount
@@ -273,6 +276,15 @@ export default function PortfolioPage({ auth, onNavigate }: Props) {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowExportDialog(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 7H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v10a2 2 0 01-2 2z" />
+                    </svg>
+                    Export
+                  </button>
                   {/* Refresh button */}
                   <button
                     onClick={fetchPrices}
@@ -509,6 +521,16 @@ export default function PortfolioPage({ auth, onNavigate }: Props) {
           </div>
         )}
       </main>
+
+      <InventoryExportDialog
+        open={showExportDialog}
+        title="Export Active Account"
+        scope="active"
+        onClose={() => setShowExportDialog(false)}
+        onExport={async (options) => {
+          await inventory.exportInventory(options);
+        }}
+      />
     </div>
   );
 }

@@ -33,6 +33,7 @@ import {
   type PricingProgress,
   type PortfolioData,
   type AccountSnapshot,
+  type AccountSnapshotExportItem,
   type AccountSnapshotSummary,
   type MultiAccountSummary,
   type FullLoadProgress,
@@ -53,6 +54,9 @@ import {
   type ArmoryRedeemResult,
   type ArmoryProgress,
   type PriceServerConfig,
+  type InventoryExportOptions,
+  type InventoryExportColumn,
+  type InventoryExportItemType,
 } from '../../shared/types';
 import {
   SETTINGS_FILE,
@@ -1074,6 +1078,116 @@ export class AccountManager extends EventEmitter {
     return allItems;
   }
 
+  private buildLiveExportItems(invData: InventoryData): AccountSnapshotExportItem[] {
+    const rows: AccountSnapshotExportItem[] = [];
+
+    const pushItem = (
+      item: InventoryItem,
+      location: AccountSnapshotExportItem['location'],
+      storageUnitName?: string,
+    ) => {
+      const marketHashName = this.pricingService.getMarketHashName(item);
+      const fallbackName = item.market_name || item.custom_name || `Item #${item.defindex}`;
+
+      rows.push({
+        itemName: fallbackName,
+        marketHashName: marketHashName || fallbackName,
+        itemType: this.getExportItemType(item),
+        quantity: 1,
+        location,
+        storageUnitName,
+        wear: item.paint_wear,
+        paintIndex: item.paint_index,
+        hasCustomName: !!item.custom_name,
+      });
+    };
+
+    for (const item of invData.items) {
+      pushItem(item, 'inventory');
+    }
+
+    for (const unit of invData.storageUnits) {
+      const storageUnitName = unit.custom_name || `Storage Unit #${unit.id}`;
+      for (const item of unit.items ?? []) {
+        pushItem(item, 'storage', storageUnitName);
+      }
+    }
+
+    return rows;
+  }
+
+  private getExportItemType(item: InventoryItem): InventoryExportItemType {
+    const weaponType = (item.weapon_type || '').toLowerCase();
+    const name = (item.market_name || item.custom_name || '').toLowerCase();
+
+    if (item.is_storage_unit) return 'container';
+    if (weaponType === 'container' || /\b(case|capsule|package|souvenir package)\b/.test(name)) return 'case';
+    if (weaponType === 'sticker' || /\bsticker\b/.test(name)) return 'sticker';
+    if (weaponType === 'graffiti' || /\bgraffiti\b/.test(name)) return 'graffiti';
+    if (weaponType === 'charm' || /\bcharm\b/.test(name)) return 'charm';
+    if (weaponType === 'agent' || /\bagent\b/.test(name)) return 'agent';
+    if (weaponType === 'music kit' || item.defindex === 1314) return 'music';
+    if (weaponType === 'tool' || weaponType === 'equipment' || weaponType === 'key') return 'tool';
+    if (weaponType === 'collectible' || /\b(medal|coin|pin|trophy|service)\b/.test(name)) return 'collectible';
+    if (['pistol', 'rifle', 'smg', 'shotgun', 'machinegun', 'sniper rifle', 'knife', 'gloves'].includes(weaponType) || name.includes('|')) {
+      return 'weapon';
+    }
+
+    return 'other';
+  }
+
+  private inferExportItemType(item: AccountSnapshotExportItem): InventoryExportItemType {
+    if (item.itemType) return item.itemType;
+
+    const name = `${item.itemName} ${item.marketHashName}`.toLowerCase();
+    if (/\b(case|capsule|package|souvenir package)\b/.test(name)) return 'case';
+    if (/\bsticker\b/.test(name)) return 'sticker';
+    if (/\bgraffiti\b/.test(name)) return 'graffiti';
+    if (/\bcharm\b/.test(name)) return 'charm';
+    if (/\bagent\b/.test(name)) return 'agent';
+    if (/\bmusic kit\b/.test(name)) return 'music';
+    if (/\b(key|name tag|patch pack|tool)\b/.test(name)) return 'tool';
+    if (/\b(medal|coin|pin|trophy|service)\b/.test(name)) return 'collectible';
+    if (name.includes('|')) return 'weapon';
+    return 'other';
+  }
+
+  private aggregateExportItems(items: AccountSnapshotExportItem[]): AccountSnapshotExportItem[] {
+    const rows: AccountSnapshotExportItem[] = [];
+    const grouped = new Map<string, AccountSnapshotExportItem>();
+
+    for (const item of items) {
+      const hasCustomName = item.hasCustomName || !!(item as { customName?: string }).customName;
+      const shouldAggregate =
+        item.location === 'snapshot' ||
+        (item.wear == null && !hasCustomName);
+
+      if (!shouldAggregate) {
+        rows.push({ ...item });
+        continue;
+      }
+
+      const key = [
+        item.itemName,
+        item.marketHashName,
+        item.location,
+        item.storageUnitName ?? '',
+        item.paintIndex ?? '',
+      ].join('\u001f');
+
+      const existing = grouped.get(key);
+      if (existing) {
+        existing.quantity += item.quantity;
+      } else {
+        const copy = { ...item, hasCustomName, quantity: item.quantity };
+        grouped.set(key, copy);
+        rows.push(copy);
+      }
+    }
+
+    return rows;
+  }
+
   private scheduleSnapshotSave(delayMs = 2000): void {
     if (this.snapshotSaveTimer) clearTimeout(this.snapshotSaveTimer);
     this.snapshotSaveTimer = setTimeout(() => {
@@ -1091,13 +1205,11 @@ export class AccountManager extends EventEmitter {
     if (invData.state !== 'loaded') return;
 
     const allItems = this.getAllKnownItems(invData);
+    const exportItems = this.buildLiveExportItems(invData);
 
     const itemQuantities: Record<string, number> = {};
-    for (const item of allItems) {
-      const marketHashName = this.pricingService.getMarketHashName(item);
-      const fallbackName = item.market_name || item.custom_name || `Item #${item.defindex}`;
-      const name = marketHashName || fallbackName;
-      itemQuantities[name] = (itemQuantities[name] ?? 0) + 1;
+    for (const item of exportItems) {
+      itemQuantities[item.marketHashName] = (itemQuantities[item.marketHashName] ?? 0) + item.quantity;
     }
 
     const info = this.steamService.accountInfo;
@@ -1112,6 +1224,7 @@ export class AccountManager extends EventEmitter {
       totalItems: allItems.length,
       lastUpdated: Date.now(),
       itemQuantities,
+      exportItems,
     };
 
     try {
@@ -1305,6 +1418,73 @@ export class AccountManager extends EventEmitter {
       combinedHistory,
       activeAccountId: activeId,
     };
+  }
+
+  getInventoryExportRows(options: InventoryExportOptions): Array<Record<InventoryExportColumn, string | number | boolean | null>> {
+    const savedAccounts = this.accountStore.listAccounts();
+    const activeId = this.steamService.steamClient.steamID?.getSteamID64() ?? null;
+    const snapshots = this.getAllSnapshots();
+    const selectedAccounts = options.scope === 'all'
+      ? savedAccounts
+      : savedAccounts.filter((account) => {
+        if (options.scope === 'active') return account.steamID === activeId;
+        return account.steamID === options.steamID;
+      });
+
+    const rows: Array<Record<InventoryExportColumn, string | number | boolean | null>> = [];
+
+    for (const account of selectedAccounts) {
+      const isActive = account.steamID === activeId;
+      const snapshot = snapshots.get(account.steamID);
+      const accountName = isActive
+        ? (this.steamService.accountInfo?.personaName || account.personaName || account.accountName)
+        : (snapshot?.personaName || account.personaName || snapshot?.accountName || account.accountName);
+
+      let exportItems: AccountSnapshotExportItem[] = [];
+
+      if (isActive && this.inventoryService.inventoryData.state === 'loaded') {
+        exportItems = this.buildLiveExportItems(this.inventoryService.inventoryData);
+      } else if (snapshot?.exportItems?.length) {
+        exportItems = snapshot.exportItems;
+      } else if (snapshot?.itemQuantities) {
+        exportItems = Object.entries(snapshot.itemQuantities).map(([name, quantity]) => ({
+          itemName: name,
+          marketHashName: name,
+          quantity,
+          location: 'snapshot',
+        }));
+      }
+
+      for (const item of this.aggregateExportItems(exportItems)) {
+        const itemType = this.inferExportItemType(item);
+        if (options.itemTypes?.length && !options.itemTypes.includes(itemType)) {
+          continue;
+        }
+
+        const priceData = this.pricingService.getCachedPrice(item.marketHashName);
+        const steamPrice = priceData?.currentPrice ?? null;
+        const skinportMinPrice = priceData?.skinport?.minPrice ?? null;
+        const price = !options.includePrices
+          ? null
+          : steamPrice === -1
+            ? (skinportMinPrice ?? 0)
+            : (steamPrice != null ? Math.max(0, steamPrice) : null);
+        const totalPrice = price == null ? null : Math.round(price * item.quantity * 100) / 100;
+
+        rows.push({
+          accountName,
+          itemName: item.itemName,
+          quantity: item.quantity,
+          storageUnitName: item.storageUnitName ?? null,
+          wear: item.wear ?? null,
+          paintIndex: item.paintIndex ?? null,
+          price,
+          totalPrice,
+        });
+      }
+    }
+
+    return rows;
   }
 
   // ---- Armory Redemption (Phase 9) ----

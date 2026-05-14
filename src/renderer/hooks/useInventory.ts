@@ -3,7 +3,14 @@
 // ============================================================
 
 import { useState, useEffect, useCallback } from 'react';
-import type { InventoryData, InventoryItem, CasketOperation, BulkOperationProgress } from '../../shared/types';
+import type {
+  InventoryData,
+  InventoryItem,
+  CasketOperation,
+  BulkOperationProgress,
+  InventoryExportOptions,
+  InventoryExportResult,
+} from '../../shared/types';
 
 const api = () => window.csinventoryporter;
 
@@ -92,6 +99,14 @@ export function useInventory() {
     }
   }, []);
 
+  const exportInventory = useCallback(async (options: InventoryExportOptions): Promise<InventoryExportResult> => {
+    const result = await api().exportInventory(options);
+    if (!result.success) {
+      throw new Error(result.error || 'Export failed');
+    }
+    return result;
+  }, []);
+
   return {
     ...data,
     error,
@@ -101,5 +116,6 @@ export function useInventory() {
     executeBulkOperation,
     cancelBulkOperation,
     renameCasket,
+    exportInventory,
   };
 }
